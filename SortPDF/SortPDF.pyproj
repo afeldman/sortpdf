@@ -25,6 +25,9 @@
     <Compile Include="deletedir.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="renameWITHuuid.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SortPDF.py" />
   </ItemGroup>
   <PropertyGroup>

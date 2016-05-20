@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, time, shutil, sys, argparse
+import os, argparse
 
 parser = argparse.ArgumentParser()
 
