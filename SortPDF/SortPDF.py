@@ -45,10 +45,10 @@ for pdffile_path in pdffiles:
 
     if vlevel > 1:
         print('try opening pdf file %s' % pdffile_path)
+
     try:
         pdffile = PdfFileReader(pdffile_path, "rb")
  
-
         if vlevel > 2:
             print('Title %s.' % pdffile.getDocumentInfo().title)
             print('Author %s' % pdffile.getDocumentInfo().author)
@@ -60,8 +60,31 @@ for pdffile_path in pdffiles:
         author = pdffile.getDocumentInfo().author
         subject = pdffile.getDocumentInfo().subject
     
+        title = str(title).replace("/"," ").replace("\\"," ").replace("\n"," ")
+        title = str(title).replace("\"","-").replace(".","_").replace(":"," ")
+
+        subject = str(subject).replace("/","").replace("\\","").replace("*","")
+        subject = str(subject).replace("\"","").replace(".","").replace(":","")
+
+        author = str(author).replace("/","").replace("\\","").replace(";","and").replace(".","").replace(":","").replace(",","and")
+        author = str(author).replace("'","")
+
     except:
         print('pdf file error %s' % pdffile_path)
+
+        move_unsort = os.path.join(dest,"unsorted")
+        
+        try:
+            if not os.path.exists(move_unsort):
+                os.mkdir(move_unsort)          
+                 
+            unsortedfile = os.path.join(move_unsort,os.path.basename(pdffile_path)+".pdf")
+  
+            shutil.move(pdffile_path, unsortedfile)
+        except:
+            print("cannot build unsorted at %s" % move_unsort)
+            continue
+
         continue
         
     if not title:
@@ -76,25 +99,38 @@ for pdffile_path in pdffiles:
 
     subjectpath = os.path.join(dest, subject)
     authorpath = os.path.join(subjectpath, author)
+
+    movepath = ""
+
     try:
-        if not os.path.exists(subjectpath):
-            os.mkdir(subjectpath)
-            os.mkdir(authorpath)
-            if vlevel > 1:
-                print(subjectpath)
-                print(authorpath)
-        
-        if not os.path.exists(authorpath):
-            os.mkdir(authorpath)
-            if vlevel > 1:
-                print(authorpath)
-            
-        shutil.move(pdffile_path, authorpath+"/"+os.path.basename(title)+".pdf")
+        try:
+            if not os.path.exists(subjectpath):
+                os.mkdir(subjectpath)
+                os.mkdir(authorpath)
+                if vlevel > 1:
+                    print(subjectpath)
+                    print(authorpath)
+        except:
+            print("cannot build subjectpath %s and authorpath %s" % (subjectpath, authorpath))
+            continue
+
+        try:
+            if not os.path.exists(authorpath):
+                os.mkdir(authorpath)
+                if vlevel > 1:
+                    print(authorpath)
+        except:
+            print("cannot build authorpath %s" % authorpath)
+            continue
+
+        movepath = os.path.join(authorpath,os.path.basename(title)+".pdf")
+
+        shutil.move(pdffile_path, movepath)
 
         if vlevel > 0:
             print("PDF File is %s" % pdffile)
-            print("Copy to %s" % authorpath+"/"+os.path.basename(pdffile_path))
+            print("Move to %s" % movepath)
 
     except:
-        print("cannot move file %s" % authorpath+"/"+os.path.basename(pdffile_path))
+        print("cannot move file from %s to %s" % (pdffile_path, movepath))
         continue
