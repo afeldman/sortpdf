@@ -23,6 +23,11 @@ def configure(conf):
         print('python module Pypdf missing: use pip install PyPDF2')
 
     try:
+        conf.check_python_module('uuid')
+    except:
+        print('python module uuid missing')
+        
+    try:
         conf.check_python_module('argparse')
     except:
         print('python module argparse missing')

@@ -4,6 +4,7 @@ import os
 import shutil
 import argparse
 import fnmatch
+import uuid
 from PyPDF2 import PdfFileWriter, PdfFileReader
 
 parser = argparse.ArgumentParser()
@@ -27,8 +28,6 @@ if not os.path.exists(dest):
             print("create destination")
 
 pdffiles = []
-
-i=0
 
 for root, dirs, files in os.walk(src):
 
@@ -88,8 +87,7 @@ for pdffile_path in pdffiles:
         continue
         
     if not title:
-        title = "no_title" + str(i)
-        i = i + 1
+        title = str(uuid.uuid1())
 
     if not author:
         author = "various"
